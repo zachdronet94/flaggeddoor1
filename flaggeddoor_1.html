@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flaggedoor — Know Before You Knock</title>
+<meta name="description" content="Flaggedoor gives contractors the truth about clients before they show up. Search any address. See payment history, disputes, and real reports from real tradespeople.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0E0E0E; --charcoal: #1A1A1A; --surface: #242424; --surface2: #2E2E2E;
+    --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+    --red: #E03131; --red-light: #FF6B6B; --red-bg: rgba(224,49,49,0.1); --red-border: rgba(224,49,49,0.3);
+    --amber: #F59F00; --amber-bg: rgba(245,159,0,0.1); --amber-border: rgba(245,159,0,0.3);
+    --green: #2F9E44; --green-bg: rgba(47,158,68,0.1); --green-border: rgba(47,158,68,0.3);
+    --text: #F0F0F0; --muted: #888; --muted2: #666; --radius: 8px; --radius-lg: 12px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--black); color: var(--text); font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  h1, h2, h3, .logo-text { font-family: 'Syne', sans-serif; }
+
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: var(--black); position: sticky; top: 0; z-index: 100; gap: 1rem; }
+  .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; flex-shrink: 0; }
+  .logo-icon { width: 34px; height: 34px; background: var(--red); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+  .logo-text { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+  .logo-text span { color: var(--red); }
+  .nav-links { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+  .nav-links a { font-size: 14px; color: var(--muted); text-decoration: none; cursor: pointer; transition: color 0.15s; white-space: nowrap; }
+  .nav-links a:hover { color: var(--text); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 20px; border-radius: var(--radius); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+  .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border2); }
+  .btn-ghost:hover { color: var(--text); background: var(--surface); }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-red:hover { background: #c92a2a; }
+  .btn-outline-red { background: transparent; color: var(--red); border: 1px solid var(--red-border); }
+  .btn-outline-red:hover { background: var(--red-bg); }
+  .btn-lg { padding: 13px 32px; font-size: 15px; font-weight: 600; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* LAUNCH BANNER */
+  .launch-banner { background: var(--red); color: #fff; text-align: center; padding: 10px 2rem; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .launch-banner a { color: #fff; text-decoration: underline; cursor: pointer; }
+
+  /* HERO */
+  .hero { padding: 5rem 2rem 4rem; text-align: center; border-bottom: 1px solid var(--border); }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 7px; background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red-light); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 99px; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .hero h1 { font-size: clamp(36px, 6vw, 62px); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; max-width: 720px; margin: 0 auto 1.25rem; }
+  .hero h1 span { color: var(--red); }
+  .hero p { font-size: 18px; color: var(--muted); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.6; }
+  .search-box { display: flex; max-width: 580px; margin: 0 auto 2rem; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); overflow: hidden; }
+  .search-box input { flex: 1; background: transparent; border: none; outline: none; padding: 16px 20px; font-size: 15px; color: var(--text); font-family: 'DM Sans', sans-serif; min-width: 0; }
+  .search-box input::placeholder { color: var(--muted2); }
+  .search-box button { background: var(--red); color: #fff; border: none; padding: 16px 28px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; white-space: nowrap; }
+  .search-box button:hover { background: #c92a2a; }
+  .hero-stats { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .hero-stats strong { color: var(--text); font-weight: 600; }
+
+  /* SECTIONS */
+  .section-full { padding: 3rem 2rem; border-bottom: 1px solid var(--border); }
+  .section-full .inner { max-width: 1100px; margin: 0 auto; }
+  .section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+  .section-head h2 { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+  .section-head a { font-size: 13px; color: var(--red); cursor: pointer; text-decoration: none; }
+
+  /* REVIEW CARDS */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .review-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; transition: border-color 0.15s; cursor: pointer; }
+  .review-card:hover { border-color: var(--border2); }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .card-address { font-size: 15px; font-weight: 600; line-height: 1.3; }
+  .card-city { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .risk-pill { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; margin-left: 8px; }
+  .risk-high { background: var(--red-bg); color: var(--red-light); border: 1px solid var(--red-border); }
+  .risk-med { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .risk-low { background: var(--green-bg); color: #69db7c; border: 1px solid var(--green-border); }
+  .card-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .card-quote { font-size: 13px; color: #aaa; line-height: 1.5; font-style: italic; }
+  .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .stars { color: var(--amber); font-size: 13px; }
+  .card-age { font-size: 11px; color: var(--muted2); }
+
+  /* HOW IT WORKS */
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
+  .step-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: var(--red); opacity: 0.4; line-height: 1; margin-bottom: 12px; }
+  .step-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .step-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* TRADES */
+  .trades-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+  .trade-tag { background: var(--surface); border: 1px solid var(--border); border-radius: 99px; padding: 7px 16px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+  .trade-tag:hover { border-color: var(--red-border); color: var(--red-light); background: var(--red-bg); }
+
+  /* MISSION */
+  .mission-band { padding: 5rem 2rem; background: var(--charcoal); border-bottom: 1px solid var(--border); }
+  .mission-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+  .mission-badge { display: inline-flex; align-items: center; gap: 7px; background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red-light); font-size: 11px; font-weight: 600; padding: 5px 14px; border-radius: 99px; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .mission-band h2 { font-size: clamp(28px, 5vw, 46px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1.5rem; }
+  .mission-band h2 span { color: var(--red); }
+  .mission-band p { font-size: 17px; color: var(--muted); line-height: 1.8; max-width: 640px; margin: 0 auto 1rem; }
+  .mission-pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 3rem; text-align: left; }
+  .pillar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
+  .pillar-icon { font-size: 28px; margin-bottom: 12px; }
+  .pillar h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .pillar p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* EARLY ADOPTER */
+  .early-band { padding: 4rem 2rem; background: var(--black); border-bottom: 1px solid var(--border); }
+  .early-inner { max-width: 900px; margin: 0 auto; }
+  .early-top { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+  .early-text .eyebrow { font-size: 11px; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .early-text h2 { font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 1rem; }
+  .early-text h2 span { color: var(--red); }
+  .early-text p { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+  .early-perks { display: flex; flex-direction: column; gap: 10px; }
+  .perk { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+  .perk-check { width: 20px; height: 20px; background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .perk-check svg { width: 10px; height: 10px; fill: #69db7c; }
+  .perk-text { color: var(--muted); line-height: 1.5; }
+  .perk-text strong { color: var(--text); }
+  .early-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; }
+  .early-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+  .early-card .sub { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+  .early-form { display: flex; flex-direction: column; gap: 10px; }
+  .early-form input, .early-form select { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 11px 14px; font-size: 14px; color: var(--text); outline: none; font-family: 'DM Sans', sans-serif; width: 100%; }
+  .early-form input:focus, .early-form select:focus { border-color: var(--red); }
+  .early-form input::placeholder { color: var(--muted2); }
+  .early-form select option { background: var(--surface2); }
+  .member-count { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+  .member-dots { display: flex; }
+  .member-dots span { width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--surface); display: flex; align-items: center; justify-content: center; font-size: 9px; margin-left: -6px; }
+  .member-dots span:first-child { margin-left: 0; }
+  @media (max-width: 640px) { .early-top { grid-template-columns: 1fr; } }
+
+  /* CTA */
+  .cta-band { padding: 4rem 2rem; text-align: center; background: var(--charcoal); border-bottom: 1px solid var(--border); }
+  .cta-band h2 { font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+  .cta-band p { font-size: 15px; color: var(--muted); margin-bottom: 1.5rem; }
+  .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* FOOTER */
+  footer { padding: 2rem; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted2); flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--border); }
+  .footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .footer-links a { color: var(--muted2); text-decoration: none; cursor: pointer; }
+  .footer-links a:hover { color: var(--muted); }
+
+  /* SEARCH RESULTS */
+  .results-wrap { max-width: 860px; margin: 0 auto; padding: 2rem; }
+  .results-header { margin-bottom: 2rem; }
+  .results-header h2 { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .results-header p { font-size: 14px; color: var(--muted); }
+  .search-again { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+  .search-again input { flex: 1; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; font-size: 14px; color: var(--text); outline: none; font-family: 'DM Sans', sans-serif; min-width: 0; }
+  .search-again input::placeholder { color: var(--muted2); }
+  .address-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
+  .address-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 12px; }
+  .address-big { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  .address-sub { font-size: 14px; color: var(--muted); margin-top: 3px; }
+  .score-ring { text-align: center; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius-lg); padding: 12px 20px; }
+  .score-ring .score-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--red-light); line-height: 1; }
+  .score-ring .score-label { font-size: 11px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .category-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+  .cat-score-card { background: var(--surface2); border-radius: var(--radius); padding: 12px; }
+  .cat-score-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .cat-score-bar-wrap { height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-bottom: 4px; }
+  .cat-score-bar { height: 100%; border-radius: 99px; }
+  .cat-score-val { font-size: 12px; font-weight: 600; }
+  .report-list { display: flex; flex-direction: column; gap: 12px; }
+  .report-item { background: var(--surface2); border-radius: var(--radius); padding: 1rem 1.25rem; border-left: 3px solid var(--red); }
+  .report-item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .report-trade { font-size: 12px; font-weight: 600; color: var(--red-light); text-transform: uppercase; letter-spacing: 0.05em; }
+  .report-date { font-size: 12px; color: var(--muted2); }
+  .report-text { font-size: 14px; color: #bbb; line-height: 1.5; margin-bottom: 8px; }
+  .report-cats { display: flex; gap: 8px; flex-wrap: wrap; }
+  .report-cat-pill { font-size: 11px; padding: 3px 10px; border-radius: 99px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+  .locked-overlay { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; text-align: center; margin-top: 12px; }
+  .locked-overlay svg { width: 32px; height: 32px; fill: var(--muted2); margin-bottom: 12px; }
+  .locked-overlay h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .locked-overlay p { font-size: 14px; color: var(--muted); margin-bottom: 1.25rem; }
+
+  /* REVIEW FORM */
+  .progress-strip { height: 3px; background: var(--surface2); }
+  .progress-fill { height: 100%; background: var(--red); transition: width 0.3s; }
+  .form-wrap { max-width: 640px; margin: 0 auto; padding: 2rem; }
+  .form-eyebrow { font-size: 12px; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .form-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .form-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; }
+  .anon-bar { display: flex; align-items: flex-start; gap: 10px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 2rem; font-size: 13px; color: #93c5fd; }
+  .anon-bar svg { width: 16px; height: 16px; fill: #93c5fd; flex-shrink: 0; margin-top: 1px; }
+  .field { margin-bottom: 1.5rem; }
+  .field > label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 7px; }
+  .field input, .field select, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 11px 14px; font-size: 14px; color: var(--text); outline: none; font-family: 'DM Sans', sans-serif; transition: border-color 0.15s; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--red); }
+  .field input::placeholder, .field textarea::placeholder { color: var(--muted2); }
+  .field textarea { min-height: 110px; resize: vertical; line-height: 1.5; }
+  .field-hint { font-size: 12px; color: var(--muted2); margin-top: 5px; }
+  .addr-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+  .trades-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .trade-chip { padding: 7px 16px; border-radius: 99px; font-size: 13px; border: 1px solid var(--border2); background: var(--surface); cursor: pointer; color: var(--muted); transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .trade-chip:hover { border-color: var(--red-border); color: var(--red-light); }
+  .trade-chip.on { background: var(--red-bg); border-color: var(--red-border); color: var(--red-light); font-weight: 600; }
+  .rating-grid { display: flex; flex-direction: column; gap: 10px; }
+  .rating-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; }
+  .rating-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .rating-name { font-size: 14px; font-weight: 600; }
+  .rating-val { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .pip-row { display: flex; gap: 6px; }
+  .pip { flex: 1; height: 36px; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--muted2); display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .pip:hover { border-color: var(--border2); color: var(--muted); }
+  .pip.on-low { background: var(--red-bg); border-color: var(--red-border); color: var(--red-light); }
+  .pip.on-mid { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber); }
+  .pip.on-high { background: var(--green-bg); border-color: var(--green-border); color: #69db7c; }
+  .pip-ends { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted2); margin-top: 4px; }
+  .overall-score-bar { display: flex; align-items: center; justify-content: space-between; background: var(--red-bg); border: 1px solid var(--red-border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+  .overall-label { font-size: 14px; font-weight: 600; color: var(--red-light); }
+  .overall-num { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; color: var(--red-light); }
+  .rec-row { display: flex; gap: 10px; }
+  .rec-btn { flex: 1; padding: 11px; border-radius: var(--radius); border: 1px solid var(--border2); background: var(--surface); cursor: pointer; font-size: 14px; font-weight: 600; color: var(--muted); transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .rec-btn.yes { background: var(--green-bg); border-color: var(--green-border); color: #69db7c; }
+  .rec-btn.no { background: var(--red-bg); border-color: var(--red-border); color: var(--red-light); }
+  .form-footer { display: flex; gap: 10px; padding-top: 1.5rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+  .btn-submit { flex: 1; padding: 13px; font-size: 15px; font-weight: 600; background: var(--red); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.15s; }
+  .btn-submit:hover { background: #c92a2a; }
+  .btn-cancel { padding: 13px 20px; border-radius: var(--radius); border: 1px solid var(--border2); background: transparent; font-size: 14px; cursor: pointer; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+
+  /* SUCCESS */
+  .success-wrap { max-width: 500px; margin: 5rem auto; padding: 2rem; text-align: center; }
+  .success-icon { width: 64px; height: 64px; background: var(--green-bg); border: 1px solid var(--green-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+  .success-icon svg { width: 28px; height: 28px; fill: #69db7c; }
+  .success-wrap h2 { font-size: 26px; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+  .success-wrap p { color: var(--muted); margin-bottom: 2rem; }
+
+  /* OUR STORY */
+  .story-wrap { max-width: 740px; margin: 0 auto; padding: 3rem 2rem; }
+  .story-eyebrow { font-size: 11px; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .story-wrap h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 1.5rem; }
+  .story-wrap h1 span { color: var(--red); }
+  .story-lead { font-size: 19px; color: #ccc; line-height: 1.7; margin-bottom: 2rem; border-left: 3px solid var(--red); padding-left: 1.25rem; font-style: italic; }
+  .story-body { font-size: 16px; color: var(--muted); line-height: 1.9; }
+  .story-body p { margin-bottom: 1.5rem; }
+  .story-body strong { color: var(--text); font-weight: 600; }
+  .story-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+  .story-values { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 2rem 0; }
+  .value-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+  .value-card .icon { font-size: 24px; margin-bottom: 10px; }
+  .value-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+  .value-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .founder-sig { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; }
+  .founder-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .founder-name { font-size: 15px; font-weight: 600; }
+  .founder-title { font-size: 13px; color: var(--muted); }
+  .story-cta { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem; text-align: center; margin-top: 3rem; }
+  .story-cta h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+  .story-cta p { font-size: 14px; color: var(--muted); margin-bottom: 1.5rem; }
+
+  /* POPUP */
+  .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+  .popup-box { background: var(--charcoal); border: 1px solid var(--border2); border-radius: 16px; max-width: 440px; width: 100%; padding: 2rem; position: relative; }
+  .popup-close { position: absolute; top: 1rem; right: 1rem; background: transparent; border: none; color: var(--muted); font-size: 24px; cursor: pointer; line-height: 1; }
+  .popup-input { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 11px 14px; font-size: 14px; color: var(--text); outline: none; font-family: 'DM Sans', sans-serif; }
+  .popup-input:focus { border-color: var(--red); }
+  .popup-input::placeholder { color: var(--muted2); }
+  .popup-select { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 11px 14px; font-size: 14px; color: var(--text); outline: none; font-family: 'DM Sans', sans-serif; }
+  .popup-select option { background: var(--surface); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="show('home')">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 6l9-3 9 3v6c0 5.25-3.75 9.75-9 11-5.25-1.25-9-5.75-9-11V6z"/></svg>
+    </div>
+    <div class="logo-text">Flagged<span>oor</span></div>
+  </div>
+  <div class="nav-links">
+    <a onclick="show('home')">Home</a>
+    <a onclick="show('search')">Search</a>
+    <a onclick="show('story')">Our Story</a>
+    <a onclick="show('form')">File a Report</a>
+    <button class="btn btn-ghost" onclick="openPopup()">Log in</button>
+    <button class="btn btn-red" onclick="openPopup()">Join Free</button>
+  </div>
+</nav>
+
+<!-- ═══════ HOME ═══════ -->
+<div id="home" class="page active">
+
+  <div class="launch-banner">
+    🚀 We're in early access — <a onclick="openPopup()">join free today</a> and help shape the future of contractor protection.
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6l9-3 9 3v6c0 5.25-3.75 9.75-9 11-5.25-1.25-9-5.75-9-11V6z"/></svg>
+      Built by contractors. For contractors.
+    </div>
+    <h1>Know before<br>you <span>knock.</span></h1>
+    <p>Search any address to see real reports from real contractors — payment history, behavior, red flags, and shoutouts for the clients who treat tradespeople right.</p>
+    <div class="search-box">
+      <input type="text" id="home-search" placeholder="Enter an address, city, or ZIP..." />
+      <button onclick="doSearch()">Search address</button>
+    </div>
+    <div class="hero-stats">
+      <span><strong>47,200+</strong> addresses reviewed</span>
+      <span><strong>12,800+</strong> contractors registered</span>
+      <span><strong>98,000+</strong> reports filed</span>
+    </div>
+  </div>
+
+  <!-- RECENT FLAGS -->
+  <div class="section-full">
+    <div class="inner">
+      <div class="section-head">
+        <h2>⚑ Recently flagged addresses</h2>
+        <a onclick="show('search')">View all →</a>
+      </div>
+      <div class="cards-grid">
+        <div class="review-card" onclick="show('search')">
+          <div class="card-top"><div><div class="card-address">4421 Birchwood Dr</div><div class="card-city">Columbus, OH 43215</div></div><span class="risk-pill risk-high">High risk</span></div>
+          <div class="card-meta">5 reports · Plumbing, Electrical</div>
+          <div class="card-quote">"Refused to pay final invoice after work passed inspection. Had to pursue collections."</div>
+          <div class="card-footer"><span class="stars">★★☆☆☆</span><span class="card-age">2 weeks ago</span></div>
+        </div>
+        <div class="review-card" onclick="show('search')">
+          <div class="card-top"><div><div class="card-address">88 Oakmont Terrace</div><div class="card-city">Phoenix, AZ 85004</div></div><span class="risk-pill risk-high">High risk</span></div>
+          <div class="card-meta">5 reports · HVAC, Roofing</div>
+          <div class="card-quote">"Threatens bad reviews to reduce the final bill. Classic move. Do not work here."</div>
+          <div class="card-footer"><span class="stars">★☆☆☆☆</span><span class="card-age">4 days ago</span></div>
+        </div>
+        <div class="review-card" onclick="show('search')">
+          <div class="card-top"><div><div class="card-address">1190 Maple Ridge Ln</div><div class="card-city">Nashville, TN 37201</div></div><span class="risk-pill risk-med">Caution</span></div>
+          <div class="card-meta">2 reports · Landscaping</div>
+          <div class="card-quote">"Slow to pay. Needed multiple follow-ups over 3 months. Eventually paid in full."</div>
+          <div class="card-footer"><span class="stars">★★★☆☆</span><span class="card-age">1 month ago</span></div>
+        </div>
+        <div class="review-card" onclick="show('search')">
+          <div class="card-top"><div><div class="card-address">502 Linden Ave</div><div class="card-city">Austin, TX 78701</div></div><span class="risk-pill risk-low">Good client</span></div>
+          <div class="card-meta">4 reports · General contracting</div>
+          <div class="card-quote">"Paid same day, respectful, clear scope. One of the easiest clients I've had."</div>
+          <div class="card-footer"><span class="stars">★★★★★</span><span class="card-age">3 weeks ago</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="mission-band">
+    <div class="mission-inner">
+      <div class="mission-badge">Our mission</div>
+      <h2>Protecting contractors. <span>Celebrating great clients.</span></h2>
+      <p>The truth is, most homeowners are wonderful. They're hardworking people who save up for a project, treat contractors with respect, and pay on time. Those clients deserve to be recognized — and on Flaggedoor, they are.</p>
+      <p>We built this platform to shine a light on both sides. The great clients who make this work worth doing, and the rare bad actors who take advantage of the people who built their homes with their own hands.</p>
+      <p>Flaggedoor is not about negativity — it's about <strong style="color:var(--text)">honesty.</strong> It's about giving contractors the information they need to walk into every job with confidence, and giving great homeowners the recognition they deserve.</p>
+      <p><strong style="color:var(--text)">The good clients built this industry alongside us. We see them. We thank them. And we protect everyone — on both sides of the door.</strong></p>
+      <div class="mission-pillars">
+        <div class="pillar"><div class="pillar-icon">🛡️</div><h3>Protection</h3><p>Know who you're dealing with before you load up the truck. Your time and your livelihood matter.</p></div>
+        <div class="pillar"><div class="pillar-icon">⭐</div><h3>Recognition</h3><p>Great homeowners deserve praise. We celebrate the clients who treat contractors right — they make this work meaningful.</p></div>
+        <div class="pillar"><div class="pillar-icon">🤝</div><h3>Community</h3><p>Contractors and great clients, building trust together. Every honest report makes the whole industry stronger.</p></div>
+        <div class="pillar"><div class="pillar-icon">⚖️</div><h3>Fairness</h3><p>We celebrate the good, flag the bad, and verify everything in between. Honesty goes both ways.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section-full" style="background:var(--charcoal)">
+    <div class="inner">
+      <div class="section-head"><h2>How it works</h2></div>
+      <div class="steps-grid">
+        <div class="step-card"><div class="step-num">01</div><h3>Search an address</h3><p>Look up any property before you bid. See all contractor reports tied to that address instantly.</p></div>
+        <div class="step-card"><div class="step-num">02</div><h3>Read the reports</h3><p>See payment scores, behavior ratings, and honest notes from verified contractors in your trade.</p></div>
+        <div class="step-card"><div class="step-num">03</div><h3>File a report</h3><p>After a job, leave an honest review. Your report protects every contractor who comes after you.</p></div>
+        <div class="step-card"><div class="step-num">04</div><h3>Stay protected</h3><p>Get alerts when an address you've flagged matches a new job inquiry in your area.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EARLY ADOPTER -->
+  <div class="early-band">
+    <div class="early-inner">
+      <div class="early-top">
+        <div class="early-text">
+          <div class="eyebrow">🚀 Early access — limited spots</div>
+          <h2>Be part of something <span>bigger than a job.</span></h2>
+          <p>Flaggedoor is just getting started — and the contractors who join now aren't just users. They're founding members. They're the reason this platform exists. They're the ones who said <em style="color:var(--text)">"enough is enough."</em></p>
+          <p>Join early and you'll help shape how this platform grows. Your voice matters here.</p>
+          <div class="early-perks">
+            <div class="perk"><div class="perk-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="perk-text"><strong>Free access forever</strong> — early members never pay to search</div></div>
+            <div class="perk"><div class="perk-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="perk-text"><strong>Founding member badge</strong> — recognized as a builder of this community</div></div>
+            <div class="perk"><div class="perk-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="perk-text"><strong>Shape the platform</strong> — your feedback directly influences what we build next</div></div>
+            <div class="perk"><div class="perk-check"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><div class="perk-text"><strong>First to know</strong> — get notified the moment full reports go live in your area</div></div>
+          </div>
+        </div>
+        <div class="early-card">
+          <h3>Join the movement</h3>
+          <div class="sub">Free to join. No credit card. No spam. Ever.</div>
+          <div class="early-form" id="early-form">
+            <input type="text" id="early-name" placeholder="Your name" />
+            <input type="email" id="early-email" placeholder="Your email address" />
+            <select id="early-trade">
+              <option value="">Your trade...</option>
+              <option>Plumbing</option><option>Electrical</option><option>HVAC</option>
+              <option>Roofing</option><option>Painting</option><option>Landscaping</option>
+              <option>General contracting</option><option>Flooring</option>
+              <option>Masonry</option><option>Power washing</option><option>Other</option>
+            </select>
+            <button class="btn btn-red" style="width:100%;padding:13px;font-size:15px;font-weight:600;justify-content:center;" onclick="submitEarly()">⚑ Claim my spot</button>
+          </div>
+          <div id="early-success" style="display:none;text-align:center;padding:1rem 0;">
+            <div style="font-size:32px;margin-bottom:10px;">✅</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;">You're in!</div>
+            <div style="font-size:14px;color:var(--muted)">Welcome to Flaggedoor. We'll be in touch soon.</div>
+          </div>
+          <div class="member-count">
+            <div class="member-dots">
+              <span>🔧</span><span>⚡</span><span>🏠</span><span>❄️</span><span>+</span>
+            </div>
+            <span>Join <strong style="color:var(--text)">hundreds of contractors</strong> already signed up</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRADES -->
+  <div class="section-full">
+    <div class="inner">
+      <div class="section-head"><h2>Browse by trade</h2></div>
+      <div class="trades-wrap">
+        <div class="trade-tag" onclick="show('search')">🔧 Plumbing</div>
+        <div class="trade-tag" onclick="show('search')">⚡ Electrical</div>
+        <div class="trade-tag" onclick="show('search')">🏠 Roofing</div>
+        <div class="trade-tag" onclick="show('search')">❄️ HVAC</div>
+        <div class="trade-tag" onclick="show('search')">🖌️ Painting</div>
+        <div class="trade-tag" onclick="show('search')">🌿 Landscaping</div>
+        <div class="trade-tag" onclick="show('search')">🔨 General contracting</div>
+        <div class="trade-tag" onclick="show('search')">🪵 Flooring</div>
+        <div class="trade-tag" onclick="show('search')">🧱 Masonry</div>
+        <div class="trade-tag" onclick="show('search')">💧 Power washing</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-band">
+    <h2>Stop getting burned. Start getting informed.</h2>
+    <p>Free for all contractors. No credit card required. Your community needs you.</p>
+    <div class="cta-btns">
+      <button class="btn btn-red btn-lg" onclick="openPopup()">Join Flaggedoor free</button>
+      <button class="btn btn-ghost btn-lg" onclick="show('story')">Read our story →</button>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2026 Flaggedoor. All rights reserved. Built by a contractor, for contractors.</span>
+    <div class="footer-links">
+      <a onclick="show('story')">Our Story</a>
+      <a>Terms</a><a>Privacy</a><a>Contact</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ═══════ SEARCH RESULTS ═══════ -->
+<div id="search" class="page">
+  <div class="results-wrap">
+    <div class="search-again">
+      <input type="text" id="results-search" placeholder="Search another address..." value="4421 Birchwood Dr, Columbus, OH" />
+      <button class="btn btn-red" onclick="doSearch()">Search</button>
+    </div>
+    <div class="results-header">
+      <h2>4421 Birchwood Dr, Columbus OH 43215</h2>
+      <p>5 contractor reports on file · Last report: 2 weeks ago</p>
+    </div>
+    <div class="address-card">
+      <div class="address-card-top">
+        <div><div class="address-big">4421 Birchwood Dr</div><div class="address-sub">Columbus, OH 43215 · Single family home</div></div>
+        <div class="score-ring"><div class="score-num">1.8</div><div class="score-label">out of 5</div></div>
+      </div>
+      <div class="category-scores">
+        <div class="cat-score-card"><div class="cat-score-label">Payment reliability</div><div class="cat-score-bar-wrap"><div class="cat-score-bar" style="width:20%;background:var(--red)"></div></div><div class="cat-score-val" style="color:var(--red-light)">1.0 / 5</div></div>
+        <div class="cat-score-card"><div class="cat-score-label">Communication</div><div class="cat-score-bar-wrap"><div class="cat-score-bar" style="width:40%;background:var(--red)"></div></div><div class="cat-score-val" style="color:var(--red-light)">2.0 / 5</div></div>
+        <div class="cat-score-card"><div class="cat-score-label">Respect for workers</div><div class="cat-score-bar-wrap"><div class="cat-score-bar" style="width:30%;background:var(--red)"></div></div><div class="cat-score-val" style="color:var(--red-light)">1.5 / 5</div></div>
+        <div class="cat-score-card"><div class="cat-score-label">Scope creep</div><div class="cat-score-bar-wrap"><div class="cat-score-bar" style="width:46%;background:var(--amber)"></div></div><div class="cat-score-val" style="color:var(--amber)">2.3 / 5</div></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap">
+        <span class="risk-pill risk-high" style="font-size:12px;padding:5px 14px">⚑ High risk address</span>
+        <span class="risk-pill risk-high" style="font-size:12px;padding:5px 14px">Non-payment reported</span>
+        <span class="risk-pill risk-med" style="font-size:12px;padding:5px 14px">Scope disputes</span>
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:10px;color:var(--text)">1 of 5 reports (free preview)</div>
+      <div class="report-list">
+        <div class="report-item">
+          <div class="report-item-top"><span class="report-trade">Plumbing</span><span class="report-date">March 2026</span></div>
+          <div class="report-text">"Refused to pay final invoice of $2,400 after work passed county inspection. Claimed unrelated pre-existing issues. Had to send to collections. Would not return."</div>
+          <div class="report-cats"><span class="report-cat-pill">Payment: 1/5</span><span class="report-cat-pill">Communication: 2/5</span><span class="report-cat-pill">Would not return</span></div>
+        </div>
+      </div>
+      <div class="locked-overlay">
+        <svg viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v2H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        <h3>4 more reports are locked</h3>
+        <p>Subscribe to unlock all contractor reports, full scores, and detailed notes for any address in the US.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-red" style="padding:12px 28px" onclick="openPopup()">Unlock full report — $9/mo</button>
+          <button class="btn btn-ghost" onclick="openPopup()">Join free to file reports</button>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:1.5rem">
+      <button class="btn btn-outline-red" onclick="show('form')">⚑ Add your own report for this address</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ REVIEW FORM ═══════ -->
+<div id="form" class="page">
+  <div class="progress-strip"><div class="progress-fill" id="form-prog" style="width:15%"></div></div>
+  <div class="form-wrap">
+    <div class="form-eyebrow">File a report</div>
+    <div class="form-title">How was this client?</div>
+    <div class="form-subtitle">Takes about 2 minutes. Protects every contractor who comes after you.</div>
+    <div class="anon-bar">
+      <svg viewBox="0 0 24 24"><path d="M12 1C8.676 1 6 3.676 6 7v2H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V10a1 1 0 0 0-1-1h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v2H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+      Your name and business are verified internally but never shown publicly. Only your trade and the date are visible.
+    </div>
+    <div class="field">
+      <label>Property address</label>
+      <div class="addr-row">
+        <input type="text" placeholder="Street address" id="f-street" oninput="updateProg()" />
+        <input type="text" placeholder="City" id="f-city" oninput="updateProg()" />
+        <input type="text" placeholder="ZIP" id="f-zip" oninput="updateProg()" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Your trade</label>
+      <div class="trades-chips">
+        <button class="trade-chip" onclick="pickTrade(this)">Plumbing</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Electrical</button>
+        <button class="trade-chip" onclick="pickTrade(this)">HVAC</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Roofing</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Painting</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Landscaping</button>
+        <button class="trade-chip" onclick="pickTrade(this)">General contracting</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Flooring</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Masonry</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Power washing</button>
+        <button class="trade-chip" onclick="pickTrade(this)">Other</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Rate this client</label>
+      <div class="rating-grid">
+        <div class="rating-row"><div class="rating-row-top"><span class="rating-name">💰 Payment reliability</span><span class="rating-val" id="rv-pay">Not rated</span></div><div class="pip-row" id="pips-pay"><button class="pip" onclick="rateIt('pay',1)">1</button><button class="pip" onclick="rateIt('pay',2)">2</button><button class="pip" onclick="rateIt('pay',3)">3</button><button class="pip" onclick="rateIt('pay',4)">4</button><button class="pip" onclick="rateIt('pay',5)">5</button></div><div class="pip-ends"><span>Never paid</span><span>Always on time</span></div></div>
+        <div class="rating-row"><div class="rating-row-top"><span class="rating-name">💬 Communication</span><span class="rating-val" id="rv-comm">Not rated</span></div><div class="pip-row" id="pips-comm"><button class="pip" onclick="rateIt('comm',1)">1</button><button class="pip" onclick="rateIt('comm',2)">2</button><button class="pip" onclick="rateIt('comm',3)">3</button><button class="pip" onclick="rateIt('comm',4)">4</button><button class="pip" onclick="rateIt('comm',5)">5</button></div><div class="pip-ends"><span>Unresponsive</span><span>Clear and prompt</span></div></div>
+        <div class="rating-row"><div class="rating-row-top"><span class="rating-name">🤝 Respect for workers</span><span class="rating-val" id="rv-resp">Not rated</span></div><div class="pip-row" id="pips-resp"><button class="pip" onclick="rateIt('resp',1)">1</button><button class="pip" onclick="rateIt('resp',2)">2</button><button class="pip" onclick="rateIt('resp',3)">3</button><button class="pip" onclick="rateIt('resp',4)">4</button><button class="pip" onclick="rateIt('resp',5)">5</button></div><div class="pip-ends"><span>Disrespectful</span><span>Professional</span></div></div>
+        <div class="rating-row"><div class="rating-row-top"><span class="rating-name">📋 Scope creep</span><span class="rating-val" id="rv-scope">Not rated</span></div><div class="pip-row" id="pips-scope"><button class="pip" onclick="rateIt('scope',1)">1</button><button class="pip" onclick="rateIt('scope',2)">2</button><button class="pip" onclick="rateIt('scope',3)">3</button><button class="pip" onclick="rateIt('scope',4)">4</button><button class="pip" onclick="rateIt('scope',5)">5</button></div><div class="pip-ends"><span>Constant add-ons</span><span>Stuck to contract</span></div></div>
+        <div class="rating-row"><div class="rating-row-top"><span class="rating-name">⭐ Overall experience</span><span class="rating-val" id="rv-overall-r">Not rated</span></div><div class="pip-row" id="pips-overall-r"><button class="pip" onclick="rateIt('overall-r',1)">1</button><button class="pip" onclick="rateIt('overall-r',2)">2</button><button class="pip" onclick="rateIt('overall-r',3)">3</button><button class="pip" onclick="rateIt('overall-r',4)">4</button><button class="pip" onclick="rateIt('overall-r',5)">5</button></div><div class="pip-ends"><span>Worst client ever</span><span>Would work again</span></div></div>
+      </div>
+    </div>
+    <div class="overall-score-bar" id="overall-bar" style="display:none">
+      <span class="overall-label">Average score</span>
+      <span class="overall-num" id="overall-val">—</span>
+    </div>
+    <div class="field">
+      <label>Would you work at this address again?</label>
+      <div class="rec-row">
+        <button class="rec-btn" id="rec-yes" onclick="pickRec('yes')">👍 Yes, definitely</button>
+        <button class="rec-btn" id="rec-no" onclick="pickRec('no')">👎 No, avoid this one</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>What happened? <span style="font-weight:400;color:var(--muted)">(required)</span></label>
+      <textarea id="f-comments" placeholder="Describe your experience. Be specific — other contractors rely on this to make real decisions. What went wrong? What did they do? The more detail, the more useful." oninput="updateProg()"></textarea>
+      <div class="field-hint">Minimum 50 characters. Do not include the homeowner's name. Be factual and honest.</div>
+    </div>
+    <div class="field">
+      <label>Type of issue <span style="font-weight:400;color:var(--muted)">(select all that apply)</span></label>
+      <div class="trades-chips" id="issue-chips">
+        <button class="trade-chip" onclick="toggleChip(this)">Non-payment</button>
+        <button class="trade-chip" onclick="toggleChip(this)">Late payment</button>
+        <button class="trade-chip" onclick="toggleChip(this)">Scope creep</button>
+        <button class="trade-chip" onclick="toggleChip(this)">Disrespectful behavior</button>
+        <button class="trade-chip" onclick="toggleChip(this)">Threatening reviews</button>
+        <button class="trade-chip" onclick="toggleChip(this)">False claims</button>
+        <button class="trade-chip" onclick="toggleChip(this)">Unsafe conditions</button>
+        <button class="trade-chip" onclick="toggleChip(this)">Great client</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>Approximate job date</label>
+      <input type="month" id="f-date" style="max-width:200px" oninput="updateProg()" />
+    </div>
+    <div class="field">
+      <label>Job value (optional)</label>
+      <input type="text" id="f-value" placeholder="e.g. $3,500" style="max-width:200px" />
+      <div class="field-hint">Helps other contractors understand the stakes. Never shown publicly in exact form.</div>
+    </div>
+    <div class="form-footer">
+      <button class="btn-cancel" onclick="show('home')">Cancel</button>
+      <button class="btn-submit" onclick="submitReport()">⚑ Submit report</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SUCCESS ═══════ -->
+<div id="success" class="page">
+  <div class="success-wrap">
+    <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+    <h2>Report submitted.</h2>
+    <p>Thank you for protecting the contractor community. Your report is anonymous and will be reviewed before going live. You just made this industry a little safer for everyone.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-red" onclick="show('home')">Back to home</button>
+      <button class="btn btn-ghost" onclick="show('search')">Search another address</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ OUR STORY ═══════ -->
+<div id="story" class="page">
+  <div class="story-wrap">
+    <div class="story-eyebrow">Our story</div>
+    <h1>We got tired of being <span>the last to know.</span></h1>
+    <div class="story-lead">"I showed up to a job once not knowing that three other contractors before me had been stiffed by the same client. Nobody told me. Nobody could. There was nowhere to look. That ends now."<br>— The Founder, Flaggedoor</div>
+    <div class="story-body">
+      <p>Flaggedoor was born out of frustration — the kind that comes after you've done everything right. You showed up on time. You did the work. You did it well. And then they didn't pay. Or they threatened you with a bad review to knock down your invoice. Or they kept adding work without adding money.</p>
+      <p>The founder of Flaggedoor has been in the trades for years, running a power washing company in Maryland. And like most contractors, he learned the hard way that the marketplace is stacked against us. Homeowners can leave reviews. Homeowners can post complaints. Homeowners can find out everything about a contractor before they hire one.</p>
+      <p><strong>But contractors? We show up blind.</strong></p>
+      <p>There's no system. No database. No warning. No way to know that the address you're about to drive to has burned four contractors before you. You just find out the hard way — after the work is done and the invoice goes unanswered.</p>
+      <p>Flaggedoor is the answer to that problem. It's a platform built on one simple idea: <strong>contractors deserve to know what they're walking into.</strong></p>
+      <p>And here's something we mean with everything we've got: <strong>most homeowners are incredible.</strong> They save up for months. They trust you with their home. They make you coffee in the morning and thank you when the job is done. Those people are the reason this work is worth doing — and Flaggedoor celebrates them just as loudly as it flags the ones who don't pay.</p>
+      <p>We're not here to bash homeowners. We're here to tell the truth about all of them — the great ones and the ones who take advantage. A highly rated address on Flaggedoor is a badge of honor. Contractors should know about those too, so they can walk into a job with confidence instead of anxiety.</p>
+      <p>This platform was built by the trades, for the trades. Every feature, every decision, every line of this site was shaped by real experience in the field. We know what it feels like to get burned. And we built this so it happens less.</p>
+    </div>
+    <hr class="story-divider">
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:1.25rem;">What we stand for</div>
+    <div class="story-values">
+      <div class="value-card"><div class="icon">🛡️</div><h3>Contractor first</h3><p>Every decision we make starts with one question: does this protect contractors?</p></div>
+      <div class="value-card"><div class="icon">🔍</div><h3>Radical transparency</h3><p>The truth, plainly stated. No corporate speak. No sugarcoating.</p></div>
+      <div class="value-card"><div class="icon">🤝</div><h3>Community over competition</h3><p>When one contractor shares a report, every contractor wins. That's the whole point.</p></div>
+      <div class="value-card"><div class="icon">⚖️</div><h3>Fairness</h3><p>We verify reports. We allow disputes. We believe in getting it right.</p></div>
+    </div>
+    <hr class="story-divider">
+    <div class="founder-sig">
+      <div class="founder-avatar">💧</div>
+      <div>
+        <div class="founder-name">The Founder</div>
+        <div class="founder-title">Power washing contractor, Maryland · Founder of Flaggedoor</div>
+      </div>
+    </div>
+    <div class="story-cta">
+      <h3>This is your platform too.</h3>
+      <p>Join Flaggedoor free today — help us build something the trades have needed for a long time. Your early membership matters more than you know.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-red btn-lg" onclick="openPopup()">Join free — claim your spot</button>
+        <button class="btn btn-ghost btn-lg" onclick="show('form')">File your first report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ EMAIL POPUP ═══════ -->
+<div class="popup-overlay" id="email-popup">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">×</button>
+    <div id="popup-form">
+      <div style="width:44px;height:44px;background:var(--red);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M3 6l9-3 9 3v6c0 5.25-3.75 9.75-9 11-5.25-1.25-9-5.75-9-11V6z"/></svg>
+      </div>
+      <div style="font-size:11px;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Free early access</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px;letter-spacing:-0.02em;">Join the movement.</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;">Be a founding member of Flaggedoor. The platform built by contractors, for contractors. Free forever for early members.</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1rem;">
+        <input class="popup-input" type="text" id="pop-name" placeholder="Your name" />
+        <input class="popup-input" type="email" id="pop-email" placeholder="Your email address" />
+        <select class="popup-select" id="pop-trade">
+          <option value="">Select your trade...</option>
+          <option>Plumbing</option><option>Electrical</option><option>HVAC</option>
+          <option>Roofing</option><option>Painting</option><option>Landscaping</option>
+          <option>General contracting</option><option>Flooring</option>
+          <option>Masonry</option><option>Power washing</option><option>Other</option>
+        </select>
+      </div>
+      <button onclick="submitPopup()" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:var(--radius);padding:13px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">⚑ Claim my founding member spot</button>
+      <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:10px;">No credit card. No spam. Unsubscribe anytime.</div>
+    </div>
+    <div id="popup-success" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px;">You're a founding member!</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.6;">Welcome to Flaggedoor. You're part of something real. We'll be in touch soon with updates.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ratings = { pay:0, comm:0, resp:0, scope:0, 'overall-r':0 };
+
+  function show(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(page).classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  function doSearch() {
+    show('search');
+    const val = document.getElementById('home-search') ? document.getElementById('home-search').value : '';
+    if (val) document.getElementById('results-search').value = val;
+  }
+
+  function pickTrade(el) {
+    document.querySelectorAll('.trade-chip').forEach(c => c.classList.remove('on'));
+    el.classList.add('on');
+    updateProg();
+  }
+
+  function toggleChip(el) {
+    el.classList.toggle('on');
+  }
+
+  function rateIt(cat, val) {
+    ratings[cat] = val;
+    const pips = document.querySelectorAll('#pips-' + cat + ' .pip');
+    pips.forEach((p, i) => {
+      p.classList.remove('on-low','on-mid','on-high');
+      if (i < val) {
+        if (val <= 2) p.classList.add('on-low');
+        else if (val === 3) p.classList.add('on-mid');
+        else p.classList.add('on-high');
+      }
+    });
+    document.getElementById('rv-' + cat).textContent = val + ' / 5';
+    const vals = Object.values(ratings).filter(v => v > 0);
+    if (vals.length > 0) {
+      const avg = vals.reduce((a,b) => a+b,0) / vals.length;
+      document.getElementById('overall-bar').style.display = 'flex';
+      document.getElementById('overall-val').textContent = avg.toFixed(1) + ' / 5';
+    }
+    updateProg();
+  }
+
+  function pickRec(val) {
+    document.getElementById('rec-yes').classList.remove('yes');
+    document.getElementById('rec-no').classList.remove('no');
+    if (val === 'yes') document.getElementById('rec-yes').classList.add('yes');
+    else document.getElementById('rec-no').classList.add('no');
+    updateProg();
+  }
+
+  function updateProg() {
+    let score = 15;
+    const street = document.getElementById('f-street');
+    if (street && street.value.trim().length > 3) score += 15;
+    const rated = Object.values(ratings).filter(v => v > 0).length;
+    score += rated * 8;
+    const comments = document.getElementById('f-comments');
+    if (comments && comments.value.trim().length >= 50) score += 15;
+    const date = document.getElementById('f-date');
+    if (date && date.value) score += 5;
+    score = Math.min(score, 100);
+    const bar = document.getElementById('form-prog');
+    if (bar) bar.style.width = score + '%';
+  }
+
+  function submitReport() {
+    const comments = document.getElementById('f-comments').value.trim();
+    if (comments.length < 50) { alert('Please add at least 50 characters describing your experience.'); return; }
+    show('success');
+  }
+
+  function submitEarly() {
+    const name = document.getElementById('early-name').value.trim();
+    const email = document.getElementById('early-email').value.trim();
+    const trade = document.getElementById('early-trade').value;
+    if (!name) { alert('Please enter your name.'); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+    if (!trade) { alert('Please select your trade.'); return; }
+    document.getElementById('early-form').style.display = 'none';
+    document.getElementById('early-success').style.display = 'block';
+  }
+
+  function openPopup() {
+    document.getElementById('email-popup').style.display = 'flex';
+  }
+
+  function closePopup() {
+    document.getElementById('email-popup').style.display = 'none';
+    localStorage.setItem('fd-popup-seen', 'true');
+  }
+
+  function submitPopup() {
+    const name = document.getElementById('pop-name').value.trim();
+    const email = document.getElementById('pop-email').value.trim();
+    const trade = document.getElementById('pop-trade').value;
+    if (!name) { alert('Please enter your name.'); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email.'); return; }
+    if (!trade) { alert('Please select your trade.'); return; }
+    document.getElementById('popup-form').style.display = 'none';
+    document.getElementById('popup-success').style.display = 'block';
+    localStorage.setItem('fd-popup-seen', 'true');
+    setTimeout(() => closePopup(), 4000);
+  }
+
+  // Auto popup after 15 seconds
+  setTimeout(() => {
+    if (!localStorage.getItem('fd-popup-seen')) {
+      openPopup();
+    }
+  }, 15000);
+
+  document.getElementById('home-search').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  // Close popup clicking outside
+  document.getElementById('email-popup').addEventListener('click', function(e) {
+    if (e.target === this) closePopup();
+  });
+</script>
+</body>
+</html>
